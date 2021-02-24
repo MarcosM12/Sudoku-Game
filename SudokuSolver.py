@@ -17,6 +17,7 @@ font = pygame.font.SysFont("comicsans", 55)
 # BOARD AND SQUARE SIZES
 BOARD_SIZE = (540, 600)
 BOARD_WIDTH = 540
+BOARD_HEIGHT= 600
 SQUARE_SIZE = 60
 
 # FPS
@@ -69,16 +70,18 @@ class Sudoku:
                 pygame.draw.line(self.board, color=BLACK, start_pos=(0, y), end_pos=(BOARD_WIDTH, y), width=2)
 
     def draw_number(self, n, x, y):
-        number = font.render(n, True, GRAY)
-        rect = number.get_rect()
-        new_x, new_y = convert_coordinates(x, y)
-        rect.center = (30 + new_x, 30 + new_y)
-        self.board.blit(number, rect)
+        if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT - 60:
+            number = font.render(n, True, GRAY)
+            rect = number.get_rect()
+            new_x, new_y = convert_coordinates(x, y)
+            rect.center = (30 + new_x, 30 + new_y)
+            self.board.blit(number, rect)
 
     def draw_square(self, x, y):
-        new_x, new_y = convert_coordinates(x, y)
-        # draw selected square
-        pygame.draw.rect(self.board, (255, 0, 0), rect=(new_x, new_y, 60, 60), width=3)
+        if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT - 60:
+            new_x, new_y = convert_coordinates(x, y)
+            # draw selected square
+            pygame.draw.rect(self.board, (255, 0, 0), rect=(new_x, new_y, 60, 60), width=3)
 
     def run(self):
         self.draw_Board()
@@ -88,9 +91,9 @@ class Sudoku:
             # self.draw_number("2")
             # event handling, gets all event from the event queue
             for event in pygame.event.get():
-
+                # Press mouse button to put a number in a square
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.draw_Board()
+                    self.draw_Board() #Redraw board to clean previous dirty squares
                     (x, y) = pygame.mouse.get_pos()
                     self.draw_square(x, y)
                     (x, y) = pygame.mouse.get_pos()
