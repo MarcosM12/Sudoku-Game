@@ -93,7 +93,9 @@ class Sudoku:
             for event in pygame.event.get():
                 # Press mouse button to put a number in a square
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.draw_Board() #Redraw board to clean previous dirty squares
+                    # Redraw board to clean previous dirty squares
+                    self.draw_Board()
+                    # Get mouse cursor position
                     (x, y) = pygame.mouse.get_pos()
                     self.draw_square(x, y)
                     (x, y) = pygame.mouse.get_pos()
