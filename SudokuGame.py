@@ -1,7 +1,10 @@
 import pygame, time
 import sys
 import math
-import Square as sq
+# BOARD AND SQUARE SIZES
+BOARD_WIDTH = 540
+BOARD_HEIGHT = 600
+SQUARE_SIZE = 60
 
 # Initialize PyGame essential components
 pygame.init()
@@ -16,30 +19,7 @@ GRAY = (129, 129, 129)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-# Initial values to display in the board
-grid = [
-    [7, 8, 0, 4, 0, 0, 1, 2, 0],
-    [6, 0, 0, 0, 7, 5, 0, 0, 9],
-    [0, 0, 0, 6, 0, 1, 0, 7, 8],
-    [0, 0, 7, 0, 4, 0, 2, 6, 0],
-    [0, 0, 1, 0, 5, 0, 9, 3, 0],
-    [9, 0, 4, 0, 6, 0, 0, 0, 5],
-    [0, 7, 0, 3, 0, 0, 0, 1, 2],
-    [1, 2, 0, 0, 0, 7, 4, 0, 0],
-    [0, 4, 9, 2, 0, 6, 0, 0, 7]
-]
-
-# BOARD AND SQUARE SIZES
-BOARD_SIZE = (540, 600)
-BOARD_WIDTH = 540
-BOARD_HEIGHT = 600
-SQUARE_SIZE = 60
-
-# FPS
-FPS = pygame.time.Clock()
-FPS_value = 60
-
-SOLVER_SPEED = 0
+SOLVER_SPEED = 100
 
 
 # Convert mouse position coordinates(x, y) to square coordinates(line, column)
@@ -62,8 +42,6 @@ def convert_coordinates(x, y):
             x_converted = math.floor(x / 60)
             y_converted = math.floor(y / 60)
             return x_converted, y_converted
-
-
 
 
 class Sudoku:
@@ -96,7 +74,7 @@ class Sudoku:
 
     # draw a number in the board
     def draw_number(self, n, x, y, color):
-        if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT - 60:
+        if 0 <= x <= 8 and 0 <= y <= 8:
             if n == '0':
                 number = font.render(n, True, WHITE, WHITE)
                 rect = number.get_rect()
@@ -170,16 +148,18 @@ class Sudoku:
 
     # Sudoku Solver with backtracking algorithm
     def auto_solve(self):
-        Pos = self.has_empty()
-        if Pos is None:
+        pos = self.has_empty()
+        if pos is None:
+
             # Make all squares non modifiable
             for x in range(0, 9):
                 for y in range(0, 9):
                     self.grid_values[y][x].update_modifiable(False)
+
             return True
         else:
-            x = Pos[0]
-            y = Pos[1]
+            x = pos[0]
+            y = pos[1]
 
         for number in range(1, 10):
             if self.is_valid(number, x, y):
@@ -195,12 +175,14 @@ class Sudoku:
 
                 pygame.draw.rect(self.board, RED, pygame.rect.Rect(60 * x, 60 * y, 60, 60), width=5)
                 self.update_grid(0, x, y)
+
                 self.draw_number('0', x, y, WHITE)
                 pygame.display.update()
                 pygame.event.pump()
                 pygame.time.delay(SOLVER_SPEED)
 
         return False
+
 
 """
 def main():

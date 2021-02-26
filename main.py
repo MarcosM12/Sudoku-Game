@@ -1,14 +1,10 @@
-import pygame, time
+import pygame
 import sys
-import math
 import Square as sq
 import SudokuGame
 
 # BOARD AND SQUARE SIZES
 BOARD_SIZE = (540, 600)
-BOARD_WIDTH = 540
-BOARD_HEIGHT = 600
-SQUARE_SIZE = 60
 
 # Initial values to display in the board
 grid = [
@@ -23,21 +19,28 @@ grid = [
     [0, 4, 9, 2, 0, 6, 0, 0, 7]
 ]
 
+FPS = pygame.time.Clock()
+FPS_value = 60
 
-def main():
-    FPS = pygame.time.Clock()
-    FPS_value = 60
-    board = pygame.display.set_mode(BOARD_SIZE)
-    pygame.display.set_caption('Sudoku Solver')  # Window Title
+
+def clean_board():
     # Initialize values in the board
     new_grid = [[0 for j in range(0, 9)] for i in range(0, 9)]
-    for square_x in range(0, 9):  # 0, 1, 2, 3, ...,8
-        for square_y in range(0, 9):
-            if grid[square_y][square_x] != 0:
-                new_grid[square_y][square_x] = sq.Square(square_x, square_y, grid[square_y][square_x], False)
-            else:
-                new_grid[square_y][square_x] = sq.Square(square_x, square_y, 0, True)
 
+    for sq_x in range(0, 9):  # 0, 1, 2, 3, ...,8
+        for sq_y in range(0, 9):
+            if grid[sq_y][sq_x] != 0:
+                new_grid[sq_y][sq_x] = sq.Square(sq_x, sq_y, grid[sq_y][sq_x], False)
+            else:
+                new_grid[sq_y][sq_x] = sq.Square(sq_x, sq_y, 0, True)
+    return new_grid
+
+
+def main():
+    board = pygame.display.set_mode(BOARD_SIZE)
+    pygame.display.set_caption('Sudoku Solver')  # Window Title
+
+    new_grid = clean_board()
     sudoku = SudokuGame.Sudoku(board, new_grid)
     sudoku.draw_Board()
     new_game = False
@@ -96,6 +99,8 @@ def main():
                     sudoku.sketch_number(9)
 
                 if event.key == pygame.K_SPACE:
+                    # Remake the whole board with initial values
+                    sudoku = SudokuGame.Sudoku(board, clean_board())
                     sudoku.draw_Board()
                     sudoku.auto_solve()
 
