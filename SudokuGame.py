@@ -39,6 +39,8 @@ SQUARE_SIZE = 60
 FPS = pygame.time.Clock()
 FPS_value = 60
 
+SOLVER_SPEED = 0
+
 
 # Convert mouse position coordinates(x, y) to square coordinates(line, column)
 def convert_coordinates(x, y):
@@ -62,16 +64,6 @@ def convert_coordinates(x, y):
             return x_converted, y_converted
 
 
-def initialize_grid(grid_values):
-    new_grid = grid_values
-    for square_x in range(0, 9):  # 0, 1, 2, 3, ...,8
-        for square_y in range(0, 9):
-            if grid_values[square_y][square_x] != 0:
-                new_grid[square_y][square_x] = sq.Square(square_x, square_y, grid[square_y][square_x], False)
-            else:
-                new_grid[square_y][square_x] = sq.Square(square_x, square_y, 0, True)
-
-    return new_grid
 
 
 class Sudoku:
@@ -102,6 +94,7 @@ class Sudoku:
                 pygame.draw.line(self.board, color=BLACK, start_pos=(0, y), end_pos=(BOARD_WIDTH, y), width=2)
         self.draw_grid_values()
 
+    # draw a number in the board
     def draw_number(self, n, x, y, color):
         if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT - 60:
             if n == '0':
@@ -126,7 +119,7 @@ class Sudoku:
         sqr.update_number(number)
 
     def draw_selected_square(self, x, y):
-        if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT - 60:
+        if 0 <= x <= 8 and 0 <= y <= 8:
             new_select_rect = pygame.rect.Rect(60 * x, 60 * y, 60, 60)
             # draw selected square
             pygame.draw.rect(self.board, (255, 0, 0), rect=new_select_rect, width=3)
@@ -134,9 +127,9 @@ class Sudoku:
             self.rect_x = x
             self.rect_y = y
 
-    # draw a number in the board
+    # Draw number in the current selected square
     def sketch_number(self, number):
-        if self.grid_values[self.rect_y][self.rect_x] != number:
+        if self.grid_values[self.rect_y][self.rect_x] != number and 0 <= self.rect_x <= 8 and 0 <= self.rect_y <= 8:
             self.update_grid(number, self.rect_x, self.rect_y)
             self.draw_number(str(number), self.rect_x, self.rect_y, BLACK)
 
@@ -175,10 +168,14 @@ class Sudoku:
         # Valid move
         return True
 
+    # Sudoku Solver with backtracking algorithm
     def auto_solve(self):
-        self.draw_Board()
         Pos = self.has_empty()
         if Pos is None:
+            # Make all squares non modifiable
+            for x in range(0, 9):
+                for y in range(0, 9):
+                    self.grid_values[y][x].update_modifiable(False)
             return True
         else:
             x = Pos[0]
@@ -189,30 +186,30 @@ class Sudoku:
                 self.update_grid(number, x, y)
                 self.draw_number(str(number), x, y, BLACK)
                 pygame.draw.rect(self.board, GREEN, pygame.rect.Rect(60 * x, 60 * y, 60, 60), width=5)
-                pygame.display.flip()
+                pygame.display.update()
                 pygame.event.pump()
-                pygame.time.delay(300)
+                pygame.time.delay(SOLVER_SPEED)
 
                 if self.auto_solve():
                     return True
 
                 pygame.draw.rect(self.board, RED, pygame.rect.Rect(60 * x, 60 * y, 60, 60), width=5)
                 self.update_grid(0, x, y)
-                self.draw_number('0', x, y, BLACK)
-                pygame.display.flip()
+                self.draw_number('0', x, y, WHITE)
+                pygame.display.update()
                 pygame.event.pump()
-                pygame.time.delay(300)
+                pygame.time.delay(SOLVER_SPEED)
 
         return False
 
-
-if __name__ == "__main__":
+"""
+def main():
     board = pygame.display.set_mode(BOARD_SIZE)
     pygame.display.set_caption('Sudoku Solver')  # Window Title
     new_grid = initialize_grid(grid)
     sudoku = Sudoku(board, new_grid)
     sudoku.draw_Board()
-
+    new_game = False
     while True:
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
@@ -268,9 +265,24 @@ if __name__ == "__main__":
                     sudoku.sketch_number(9)
 
                 if event.key == pygame.K_SPACE:
+                    sudoku.draw_Board()
                     sudoku.auto_solve()
-                    print("done")
+                    new_game = True
+                    break
 
-        sudoku.redraw_board()  # redraw board and grid values
-        FPS.tick(FPS_value)
-        pygame.display.update()  # Refresh display content
+                if event.key == pygame.K_BACKSPACE:
+                    if sudoku.grid_values[sudoku.rect_y][sudoku.rect_x] != 0:
+                        sudoku.update_grid(0, sudoku.rect_x, sudoku.rect_y)
+                        sudoku.draw_number('0', sudoku.rect_x, sudoku.rect_y, WHITE)
+        if new_game is False:
+            sudoku.redraw_board()  # redraw board and grid values
+            FPS.tick(FPS_value)
+            pygame.display.update()  # Refresh display content
+        else:
+            break
+    main()
+
+
+
+main()
+"""
