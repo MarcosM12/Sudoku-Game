@@ -17,3 +17,9 @@ class Square:
             return True
         else:
             return False
+
+    def update_modifiable(self, option):
+        if option is True:
+            self.is_modifiable = True
+        else:
+            self.is_modifiable = False
