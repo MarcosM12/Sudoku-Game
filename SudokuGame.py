@@ -1,6 +1,7 @@
 import pygame, time
 import sys
 import math
+
 # BOARD AND SQUARE SIZES
 BOARD_WIDTH = 540
 BOARD_HEIGHT = 600
@@ -9,7 +10,8 @@ SQUARE_SIZE = 60
 # Initialize PyGame essential components
 pygame.init()
 pygame.font.init()
-font = pygame.font.SysFont("comicsans", 55)
+font_L = pygame.font.SysFont("comicsans", 55)  # Larger font
+font_S = pygame.font.SysFont("comicsans", 40)  # Smaller font
 
 # COLORS
 BLACK = (0, 0, 0)
@@ -18,7 +20,7 @@ LIGHTGRAY = (200, 200, 200)
 GRAY = (129, 129, 129)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-
+BLUE = (0, 0, 255)
 SOLVER_SPEED = 100
 
 
@@ -55,7 +57,7 @@ class Sudoku:
 
     def draw_Board(self):
         # Fill background
-        self.board.fill((255, 255, 255))
+        self.board.fill(WHITE)
         # minor lines
         for x in range(0, BOARD_WIDTH + SQUARE_SIZE, SQUARE_SIZE):
             pygame.draw.line(self.board, color=GRAY, start_pos=(x, 0), end_pos=(x, BOARD_WIDTH))
@@ -70,27 +72,30 @@ class Sudoku:
         for y in range(0, BOARD_WIDTH + SQUARE_SIZE, SQUARE_SIZE):
             if y % 9 == 0:
                 pygame.draw.line(self.board, color=BLACK, start_pos=(0, y), end_pos=(BOARD_WIDTH, y), width=2)
-        self.draw_grid_values()
+        self.draw_grid_values(temp_color=BLUE)
 
     # draw a number in the board
     def draw_number(self, n, x, y, color):
+
         if 0 <= x <= 8 and 0 <= y <= 8:
             if n == '0':
-                number = font.render(n, True, WHITE, WHITE)
-                rect = number.get_rect()
-                rect.center = (30 + 60 * x, 30 + 60 * y)
-                self.board.blit(number, rect)
+                color = WHITE
+                background = WHITE
             else:
-                number = font.render(n, True, color)
-                rect = number.get_rect()
-                rect.center = (30 + 60 * x, 30 + 60 * y)
-                self.board.blit(number, rect)
+                background = WHITE
+            number = font_L.render(n, True, color, background)
+            rect = number.get_rect()
+            rect.center = (30 + 60 * x, 30 + 60 * y)
+            self.board.blit(number, rect)
 
-    def draw_grid_values(self):
+    def draw_grid_values(self, temp_color):
         for x in range(0, 9):
             for y in range(0, 9):
                 if self.grid_values[y][x].value != 0:
-                    self.draw_number(str(self.grid_values[y][x].value), x, y, BLACK)
+                    if not self.grid_values[y][x].is_modifiable:
+                        self.draw_number(str(self.grid_values[y][x].value), x, y, BLACK)
+                    else:
+                        self.draw_number(str(self.grid_values[y][x].value), x, y, temp_color)
 
     def update_grid(self, number, x, y):
         sqr = self.grid_values[y][x]
@@ -105,15 +110,19 @@ class Sudoku:
             self.rect_x = x
             self.rect_y = y
 
-    # Draw number in the current selected square
-    def sketch_number(self, number):
+    # Insert number in the current selected square
+    def insert_number(self, number):
         if self.grid_values[self.rect_y][self.rect_x] != number and 0 <= self.rect_x <= 8 and 0 <= self.rect_y <= 8:
             self.update_grid(number, self.rect_x, self.rect_y)
-            self.draw_number(str(number), self.rect_x, self.rect_y, BLACK)
 
     # Redraw the sudoku board with user's new values
-    def redraw_board(self):
+    def redraw_board(self, time):
         self.draw_Board()
+        timer_str = "Time: " + (str(time))
+        number = font_S.render(timer_str, True, BLACK, WHITE)
+        rect = number.get_rect()
+        rect.center = (30 + 60 * 7, 30 + 60 * 9)
+        self.board.blit(number, rect)
         # draw selected rectangle
         pygame.draw.rect(self.board, (255, 0, 0), self.selected_rect, width=3)
 

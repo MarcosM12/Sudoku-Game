@@ -2,6 +2,7 @@ import pygame
 import sys
 import Square as sq
 import SudokuGame
+import math
 
 # BOARD AND SQUARE SIZES
 BOARD_SIZE = (540, 600)
@@ -18,9 +19,14 @@ grid = [
     [1, 2, 0, 0, 0, 7, 4, 0, 0],
     [0, 4, 9, 2, 0, 6, 0, 0, 7]
 ]
+# Colors
+GRAY = (129, 129, 129)
+BLACK = (0, 0, 0)
 
 FPS = pygame.time.Clock()
 FPS_value = 60
+
+font = pygame.font.SysFont("comicsans", 55)
 
 
 def clean_board():
@@ -36,17 +42,25 @@ def clean_board():
     return new_grid
 
 
+
 def main():
+    new_game = False
+    counter = 0
+    timer = pygame.USEREVENT + 1
+    pygame.time.set_timer(timer, 1000)
     board = pygame.display.set_mode(BOARD_SIZE)
     pygame.display.set_caption('Sudoku Solver')  # Window Title
 
     new_grid = clean_board()
     sudoku = SudokuGame.Sudoku(board, new_grid)
     sudoku.draw_Board()
-    new_game = False
+
     while True:
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
+            if event.type == timer:
+                counter += 1
+
             # Press mouse button to put a number in a square
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Get mouse cursor position
@@ -62,41 +76,41 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    sudoku.sketch_number(1)
+                    sudoku.insert_number(1)
                 if event.key == pygame.K_2:
-                    sudoku.sketch_number(2)
+                    sudoku.insert_number(2)
                 if event.key == pygame.K_3:
-                    sudoku.sketch_number(3)
+                    sudoku.insert_number(3)
                 if event.key == pygame.K_4:
-                    sudoku.sketch_number(4)
+                    sudoku.insert_number(4)
                 if event.key == pygame.K_5:
-                    sudoku.sketch_number(5)
+                    sudoku.insert_number(5)
                 if event.key == pygame.K_6:
-                    sudoku.sketch_number(6)
+                    sudoku.insert_number(6)
                 if event.key == pygame.K_7:
-                    sudoku.sketch_number(7)
+                    sudoku.insert_number(7)
                 if event.key == pygame.K_8:
-                    sudoku.sketch_number(8)
+                    sudoku.insert_number(8)
                 if event.key == pygame.K_9:
-                    sudoku.sketch_number(9)
+                    sudoku.insert_number(9)
                 if event.key == pygame.K_KP1:
-                    sudoku.sketch_number(1)
+                    sudoku.insert_number(1)
                 if event.key == pygame.K_KP2:
-                    sudoku.sketch_number(2)
+                    sudoku.insert_number(2)
                 if event.key == pygame.K_KP3:
-                    sudoku.sketch_number(3)
+                    sudoku.insert_number(3)
                 if event.key == pygame.K_KP4:
-                    sudoku.sketch_number(4)
+                    sudoku.insert_number(4)
                 if event.key == pygame.K_KP5:
-                    sudoku.sketch_number(5)
+                    sudoku.insert_number(5)
                 if event.key == pygame.K_KP6:
-                    sudoku.sketch_number(6)
+                    sudoku.insert_number(6)
                 if event.key == pygame.K_KP7:
-                    sudoku.sketch_number(7)
+                    sudoku.insert_number(7)
                 if event.key == pygame.K_KP8:
-                    sudoku.sketch_number(8)
+                    sudoku.insert_number(8)
                 if event.key == pygame.K_KP9:
-                    sudoku.sketch_number(9)
+                    sudoku.insert_number(9)
 
                 if event.key == pygame.K_SPACE:
                     # Remake the whole board with initial values
@@ -113,7 +127,7 @@ def main():
                         sudoku.draw_number('0', sudoku.rect_x, sudoku.rect_y, (255, 255, 255))
 
         if new_game is False:
-            sudoku.redraw_board()  # redraw board and grid values
+            sudoku.redraw_board(counter)  # redraw board and grid values
             FPS.tick(FPS_value)
             pygame.display.update()  # Refresh display content
         else:
