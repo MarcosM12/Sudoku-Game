@@ -1,5 +1,4 @@
-import pygame
-import sys
+import pygame, sys, time
 import Square as sq
 import SudokuGame
 import math
@@ -42,24 +41,22 @@ def clean_board():
     return new_grid
 
 
-
 def main():
     new_game = False
-    counter = 0
+    elapsed_time = 0
     timer = pygame.USEREVENT + 1
     pygame.time.set_timer(timer, 1000)
     board = pygame.display.set_mode(BOARD_SIZE)
     pygame.display.set_caption('Sudoku Solver')  # Window Title
 
-    new_grid = clean_board()
-    sudoku = SudokuGame.Sudoku(board, new_grid)
+    sudoku = SudokuGame.Sudoku(board, clean_board())
     sudoku.draw_Board()
-
+    start_ticks = time.time()  # starter tick
     while True:
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
             if event.type == timer:
-                counter += 1
+                elapsed_time = round(time.time() - start_ticks)
 
             # Press mouse button to put a number in a square
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -122,12 +119,12 @@ def main():
                     new_game = True
 
                 if event.key == pygame.K_BACKSPACE:
-                    if sudoku.grid_values[sudoku.rect_y][sudoku.rect_x] != 0:
+                    if sudoku.grid[sudoku.rect_y][sudoku.rect_x] != 0:
                         sudoku.update_grid(0, sudoku.rect_x, sudoku.rect_y)
                         sudoku.draw_number('0', sudoku.rect_x, sudoku.rect_y, (255, 255, 255))
 
         if new_game is False:
-            sudoku.redraw_board(counter)  # redraw board and grid values
+            sudoku.redraw_board(elapsed_time)  # redraw board and grid values
             FPS.tick(FPS_value)
             pygame.display.update()  # Refresh display content
         else:

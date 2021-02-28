@@ -1,4 +1,4 @@
-import pygame, time
+import pygame, datetime
 import sys
 import math
 
@@ -11,7 +11,7 @@ SQUARE_SIZE = 60
 pygame.init()
 pygame.font.init()
 font_L = pygame.font.SysFont("comicsans", 55)  # Larger font
-font_S = pygame.font.SysFont("comicsans", 40)  # Smaller font
+font_S = pygame.font.SysFont("comicsans", 35)  # Smaller font
 
 # COLORS
 BLACK = (0, 0, 0)
@@ -50,7 +50,7 @@ class Sudoku:
 
     def __init__(self, window, values):
         self.board = window
-        self.grid_values = values
+        self.grid = values
         self.selected_rect = pygame.rect.Rect(0, 0, 0, 0)
         self.rect_x = 0
         self.rect_y = 0
@@ -91,14 +91,14 @@ class Sudoku:
     def draw_grid_values(self, temp_color):
         for x in range(0, 9):
             for y in range(0, 9):
-                if self.grid_values[y][x].value != 0:
-                    if not self.grid_values[y][x].is_modifiable:
-                        self.draw_number(str(self.grid_values[y][x].value), x, y, BLACK)
+                if self.grid[y][x].value != 0:
+                    if not self.grid[y][x].is_modifiable:
+                        self.draw_number(str(self.grid[y][x].value), x, y, BLACK)
                     else:
-                        self.draw_number(str(self.grid_values[y][x].value), x, y, temp_color)
+                        self.draw_number(str(self.grid[y][x].value), x, y, temp_color)
 
     def update_grid(self, number, x, y):
-        sqr = self.grid_values[y][x]
+        sqr = self.grid[y][x]
         sqr.update_number(number)
 
     def draw_selected_square(self, x, y):
@@ -112,14 +112,13 @@ class Sudoku:
 
     # Insert number in the current selected square
     def insert_number(self, number):
-        if self.grid_values[self.rect_y][self.rect_x] != number and 0 <= self.rect_x <= 8 and 0 <= self.rect_y <= 8:
+        if self.grid[self.rect_y][self.rect_x] != number and 0 <= self.rect_x <= 8 and 0 <= self.rect_y <= 8:
             self.update_grid(number, self.rect_x, self.rect_y)
 
     # Redraw the sudoku board with user's new values
     def redraw_board(self, time):
         self.draw_Board()
-        timer_str = "Time: " + (str(time))
-        number = font_S.render(timer_str, True, BLACK, WHITE)
+        number = font_S.render("Time: " + str(datetime.timedelta(seconds=time)), True, BLACK, WHITE)
         rect = number.get_rect()
         rect.center = (30 + 60 * 7, 30 + 60 * 9)
         self.board.blit(number, rect)
@@ -129,7 +128,7 @@ class Sudoku:
     def has_empty(self):
         for y in range(0, 9):
             for x in range(0, 9):
-                if self.grid_values[y][x].is_empty():
+                if self.grid[y][x].is_empty():
                     return [x, y]
         return None
 
@@ -137,12 +136,12 @@ class Sudoku:
     def is_valid(self, number, x, y):
         # check row
         for y1 in range(0, 9):
-            if self.grid_values[y1][x].value == number:
+            if self.grid[y1][x].value == number:
                 return False
 
         # check line
         for x1 in range(0, 9):
-            if self.grid_values[y][x1].value == number:
+            if self.grid[y][x1].value == number:
                 return False
 
         # check major square
@@ -150,7 +149,7 @@ class Sudoku:
         major_square_y = math.floor(y / 3)
         for x1 in range(major_square_x * 3, major_square_x * 3 + 3):
             for y1 in range(major_square_y * 3, major_square_y * 3 + 3):
-                if self.grid_values[y1][x1].value == number:
+                if self.grid[y1][x1].value == number:
                     return False
         # Valid move
         return True
@@ -159,11 +158,10 @@ class Sudoku:
     def auto_solve(self):
         pos = self.has_empty()
         if pos is None:
-
             # Make all squares non modifiable
             for x in range(0, 9):
                 for y in range(0, 9):
-                    self.grid_values[y][x].update_modifiable(False)
+                    self.grid[y][x].update_modifiable(False)
 
             return True
         else:
