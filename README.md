@@ -5,7 +5,7 @@ Sudoku game with automatic solver function based on the Backtraking algorithm
 
 # Backtracking algorithm Visual Effect
 
-<img src="https://github.com/MarcosM12/Sudoku-Game/blob/master/Solver.PNG" width="400">
+<img src="https://github.com/MarcosM12/Sudoku-Game/blob/master/Solver.PNG" align="center" width="400">
 
 # How to play
 1.Press L-alt to begin a new game  
