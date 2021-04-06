@@ -1,7 +1,7 @@
 # Sudoku-Game
 Sudoku game with automatic solver function based on the Backtraking algorithm
 
-![Sudoku UI](https://github.com/MarcosM12/Sudoku-Game/blob/master/sudoku.PNG)
+<img src=https://github.com/MarcosM12/Sudoku-Game/blob/master/sudoku.PNG width="400">
 
 # Backtracking algorithm Visual Effect
 
