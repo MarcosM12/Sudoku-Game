@@ -1,9 +1,11 @@
 # Sudoku-Game
 Sudoku game with automatic solver function based on the Backtraking algorithm
 
+![Sudoku UI](https://github.com/MarcosM12/Sudoku-Game/blob/master/sudoku.PNG)
 
+# Backtracking algorithm Visual Effect
 
-# Backtracking algorithm
+![Solver](https://github.com/MarcosM12/Sudoku-Game/blob/master/Solver.PNG)
 
 # How to play
 1.Press L-alt to begin a new game  
