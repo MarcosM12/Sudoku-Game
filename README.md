@@ -1,5 +1,5 @@
 # Sudoku-Game
-Sudoku game with automatic solver function based on Backtraking algorithm
+Sudoku game with automatic solver function based on the Backtraking algorithm
 
 
 
